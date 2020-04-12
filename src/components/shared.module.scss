@@ -1,0 +1,31 @@
+$dark: #343a40;
+
+@mixin abs-center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+}
+
+@mixin tn-2 {
+  transition: all 0.2s linear;
+  -webkit-transition: all 0.2s linear;
+}
+
+.content_center{
+  @include abs-center;
+  top: 30%;
+  max-width: 400px;
+}
+
+button.log_screen{
+  @include tn-2;
+  color: white;
+  border: 2px solid white;
+  border-radius: 20px;
+  font-weight: 700;
+  &:hover{
+    color: $dark;
+    background: white;
+  }
+}
