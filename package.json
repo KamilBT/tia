@@ -38,5 +38,5 @@
     ]
   },
   "proxy": "http://localhost:80",
-  "homepage": "http://localhost/fmfi/tia/event-planner/"
+  "homepage": "~bator3/tia/event-planner/"
 }

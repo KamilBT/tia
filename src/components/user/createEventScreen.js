@@ -129,7 +129,7 @@ class CreateEventScreen extends React.Component {
 
             $.ajax({
                 type: 'post',
-                url: this.props.baseUrl+'/public/backend/createEvent.php',
+                url: this.props.baseUrl+'/backend/createEvent.php',
                 data: "name="+this.props.user.name+"&id_sender="+this.props.user.id+"&action=defaultEv&ev_name="+this.state.event_name+
                       "&ev_location="+this.state.event_location+"&ev_date="+this.state.event_date+
                       "&ev_time="+this.state.event_time+"&send_to="+JSON.stringify(this.state.send_to),

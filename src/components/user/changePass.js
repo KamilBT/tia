@@ -68,7 +68,7 @@ class ChangePass extends React.Component {
                     let wrong = this.strings[this.props.lang].wrong;
                     $.ajax({
                         type: 'post',
-                        url: this.props.baseUrl+'/public/backend/login_screen.php',
+                        url: this.props.baseUrl+'/backend/login_screen.php',
                         data: $("#changePass").serialize() + "&action="+act+"&name="+this.props.user.name,
                         success: function (response) {
                             let resp = JSON.parse(response);                   

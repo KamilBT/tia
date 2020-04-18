@@ -67,7 +67,7 @@ class SettingsScreen extends React.Component {
       let check = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
       $.ajax({
         type: 'post',
-        url: this.props.baseUrl+'/public/backend/deleteAcc.php',
+        url: this.props.baseUrl+'/backend/deleteAcc.php',
         data: {name:this.props.user.name, action:'deleteUsr', check:check},
         props: this.props,
         success: function (response) {

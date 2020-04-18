@@ -96,7 +96,7 @@ class UserScreen extends React.Component {
       
       $.ajax({
           type: 'post',
-          url: this.props.baseUrl+'/public/backend/getCreated.php',
+          url: this.props.baseUrl+'/backend/getCreated.php',
           data: "name="+this.props.user.name+"&id_sender="+this.props.user.id+"&action=getAll",
           user: this,
           success: function (response) {
