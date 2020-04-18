@@ -2,9 +2,6 @@ import React from 'react';
 //own ccs/scss must have .module in filename ...
 import $ from 'jquery';
 import styles from '../shared.module.scss';
-import {Shared} from '../shared.js'
-
-let shared = new Shared();
 
 class LoginForm extends React.Component {
     constructor(props) {
@@ -31,7 +28,6 @@ class LoginForm extends React.Component {
                 wrong: 'Username or password is invalid'
             }
         };
-        this.lang = shared.getSupportedLang();
         this.state = { 
             pass: ''
         };
@@ -62,12 +58,15 @@ class LoginForm extends React.Component {
     user_action(event, act) {
         event.preventDefault();
         if(this.props.user.name.length > 0 && this.state.pass.length > 0){
-            let taken = this.strings[this.lang].taken;
-            let wrong = this.strings[this.lang].wrong;
+            let taken = this.strings[this.props.lang].taken;
+            let wrong = this.strings[this.props.lang].wrong;
             $.ajax({
                 type: 'post',
-                url: shared.getUrl()+'/public/backend/login_screen.php',
+                url: this.props.baseUrl+'/public/backend/login_screen.php',
                 data: $("#loginForm").serialize() + "&action="+act,
+                setUserList: this.props.setUserList,
+                setUserListID: this.props.setUserListID,
+                setUserID: this.props.setUserID,
                 success: function (response) {
                     let resp = JSON.parse(response);                   
                     switch(resp?.check){
@@ -78,11 +77,13 @@ class LoginForm extends React.Component {
                             $("#err_message").html(wrong).fadeIn();
                             break;
                         case 'success':
-                            //TODO LOAD USER DATA
-
+                            //TODO LOAD USER DATA                                                     
+                            this.setUserList(resp.data.userList, resp.data.userListId);
+                            this.setUserID(resp.data.user_id);
                             //hide LoginScreen and open UserScreen
                             $("#login_screen").animate({left: '500px', opacity: '0'}, 500).fadeOut();
                             $("#user_screen").fadeIn();
+                            $("#homeMenu").fadeIn();
                             break;
                         default:
                             break;
@@ -106,22 +107,22 @@ class LoginForm extends React.Component {
                 <input type="text" id="input_name" name="name" className="form-control" maxLength="40"
                 value={name} 
                 onChange={this.updateInputValue} 
-                placeholder={this.strings[this.lang].name} />					
+                placeholder={this.strings[this.props.lang].name} />					
             </div>
             <div className="col-12 form-group">					
                 <input type="password" id="input_pass" name="pass" className="form-control" maxLength="40" 
-                onChange={this.updateInputValue} placeholder={this.strings[this.lang].pass} />
+                onChange={this.updateInputValue} placeholder={this.strings[this.props.lang].pass} />
             </div>
             <div className="d-flex">
                 <div className="col-6 form-group">					
                     <button type="submit" className={"btn align-self-end px-5 submit " +styles.log_screen}
                         onClick={ event => this.user_action(event, 'login')}
-                    >{this.strings[this.lang].login}</button>
+                    >{this.strings[this.props.lang].login}</button>
                 </div>
                 <div className="col-6 form-group">					
                     <button className={"btn align-self-end px-5 " +styles.log_screen}
                         onClick={ event => this.user_action(event, 'register')}
-                    >{this.strings[this.lang].register}</button>
+                    >{this.strings[this.props.lang].register}</button>
                 </div>
             </div>
             <div className="d-flex">

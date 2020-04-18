@@ -12,13 +12,16 @@ class LoginScreen extends React.Component {
 
     render() {
       //sharing user name across components
-      const user = this.props.user;
       return (
         <div id="login_screen" className={"container "+ styles.content_center}>
             <h2 className="text-white">Event planner</h2>       
             <LoginForm 
-              user={user} 
+              user={this.props.user} 
+              lang={this.props.lang}
+              baseUrl={this.props.baseUrl}
               onLoginScreenInput={this.props.onLoginScreenInput}
+              setUserList = {this.props.setUserList}
+              setUserID = {this.props.setUserID}
             />
 
         </div>

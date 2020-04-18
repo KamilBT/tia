@@ -12,16 +12,26 @@ $dark: #343a40;
   -webkit-transition: all 0.2s linear;
 }
 
+@mixin style_white{
+  color: white;
+  border: 2px solid white;
+}
+
+.style_white{
+  @include style_white;
+}
+
 .content_center{
   @include abs-center;
   top: 30%;
   max-width: 400px;
+  overflow: auto;
+  max-height: 55vh;
 }
 
 button.log_screen{
   @include tn-2;
-  color: white;
-  border: 2px solid white;
+  @include style_white;
   border-radius: 20px;
   font-weight: 700;
   &:hover{
@@ -36,6 +46,7 @@ button.log_screen{
 
 .screen{
   height: 100vh;
+  display: flex;
 }
 
 .hidden{
@@ -43,9 +54,15 @@ button.log_screen{
 }
 
 .user_icon{
-  height: 20vmin;
-  min-height: 60px;
+  height: 8vmin;
+  min-height: 40px;
   max-height: 85px;
+}
+
+.detail_icon{
+  height: 40px;
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
 }
 
 .menu_btn{
@@ -56,8 +73,7 @@ button.log_screen{
     outline: none;
   }
   .menu_item{
-    border: 2px solid white;
-    color: white;
+    @include style_white;
     border-radius: 40px;
     &:hover{
       cursor: pointer;
