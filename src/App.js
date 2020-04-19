@@ -29,8 +29,8 @@ class App extends React.Component {
         userListID: []
       },
       lang: 'en',
-      //baseUrl: 'http://localhost/fmfi/tia/event-planner'
-      baseUrl: '.'
+      baseUrl: 'http://localhost/fmfi/tia/event-planner/public'
+      //baseUrl: '.'
     };
   }
 

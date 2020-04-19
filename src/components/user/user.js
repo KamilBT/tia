@@ -5,6 +5,7 @@ import styles from '../shared.module.scss';
 import $ from 'jquery';
 import {HomeScreen} from './homeScreen.js';
 import {CreateEventScreen} from './createEventScreen.js';
+import {ManageRecievedScreen} from './manageRecievedScreen.js';
 import {ManageCreatedScreen} from './manageCreatedScreen.js';
 import {SettingsScreen} from './settings.js';
 
@@ -17,6 +18,8 @@ class UserScreen extends React.Component {
         this.changeScreen = this.changeScreen.bind(this);
         this.updateNewEventsCount = this.updateNewEventsCount.bind(this);
         this.getCreatedEvents = this.getCreatedEvents.bind(this);
+        this.getRecievedEvents = this.getRecievedEvents.bind(this);
+        this.updateResponse = this.updateResponse.bind(this);
         //localization
         this.strings ={
             sk:{
@@ -31,7 +34,8 @@ class UserScreen extends React.Component {
         this.state = {
           screen: 'home',
           new_events: 0,
-          created_ev: {}
+          created_ev: {},
+          recieved_ev: {}
         }
     }
     /**
@@ -62,6 +66,15 @@ class UserScreen extends React.Component {
           $("#createEventScreen").fadeOut();
           $("#homeMenu").fadeIn();
           break;
+        case 'manage_recieved':
+          this.getRecievedEvents();
+          $("#homeMenu").fadeOut();
+          $("#manageRecievedScreen").fadeIn();
+          break;
+        case 'mng_recieved_back':
+          $("#manageRecievedScreen").fadeOut();
+          $("#homeMenu").fadeIn();
+          break;
         case 'manage_created':
           this.getCreatedEvents();
           $("#homeMenu").fadeOut();
@@ -74,6 +87,7 @@ class UserScreen extends React.Component {
           break;
         case 'detailEv_close':
           $("#event_details").fadeOut();
+          break;
         default:
           break;
       }
@@ -150,6 +164,76 @@ class UserScreen extends React.Component {
               }             
           }
       });    
+    }
+
+    /**
+     *  updates count of new events
+     */
+    updateNewEventsCount = async(count) => {
+      await this.setState({
+        new_events: count
+      });
+
+    }
+
+    /**
+     *  getRecievedEvents from database
+     */
+    getRecievedEvents(){
+      
+      $.ajax({
+          type: 'post',
+          url: this.props.baseUrl+'/backend/getRecieved.php',
+          data: "name="+this.props.user.name+"&id_sender="+this.props.user.id+"&action=getAll",
+          user: this,
+          success: function (response) {
+              let resp = JSON.parse(response);                   
+              switch(resp?.check){
+                  case 'success':                                                                        
+                      //hide show them after load with ajax, hide on back to menu
+                      console.log(resp?.data);
+                      const ev_array = resp?.data.events;
+                      //convert array to nice object on client side instead of server
+                      let events = {};
+                      ev_array.forEach(el => {
+                        //console.log(el);
+                        if(!events.hasOwnProperty(el.id_event)){
+                          //if object has no data for event, add shared data and 1st reciever
+                          events[el.id_event] = {
+                            sender: el.sender,
+                            id_sender: el.sender_id,
+                            name: el.name,
+                            location: el.location,
+                            date: el.date,
+                            time: el.time,                            
+                            response: el.response,
+                            dismiss: el.dismiss,
+                            booking: el?.booking                                                             
+                          }
+                        }                                    
+                      });                      
+                      this.user.setState({
+                        recieved_ev: events
+                      });
+                      console.log(this.user.state);
+                      //render list
+                      
+                      $("#recieved_list").fadeIn();
+                      break;
+                  default:
+                      break;
+              }             
+          }
+      });    
+  }
+
+  async updateResponse(ev_id, event){
+    await this.setState(prevState => ({
+      recieved_ev: {                   
+          ...prevState.recieved_ev,    
+          [ev_id]: event 
+      }
+    }));
   }
     
   
@@ -159,7 +243,7 @@ class UserScreen extends React.Component {
       const lang = this.props.lang;
       const baseUrl = this.props.baseUrl;
       const new_events = this.state.new_events;
-      console.log(this.state);
+      
       return (
         <div id="user_screen" className={['container', 'py-5', styles.screen, styles.hidden].join(' ')}>
             <h3 className="text-white">{this.strings[this.props.lang].welcome + " " +this.props.user.name} </h3>
@@ -181,6 +265,18 @@ class UserScreen extends React.Component {
               lang = {lang}
               baseUrl={baseUrl}
               changeScreen={this.changeScreen}
+            />
+
+            <ManageRecievedScreen
+              user={user}
+              sreen = {screen}
+              lang = {lang}
+              baseUrl={baseUrl}
+              changeScreen={this.changeScreen}
+
+              recieved_ev = {this.state.recieved_ev}
+              user_id = {this.props.user.id}
+              updateResponse = {this.updateResponse}
             />
 
             <ManageCreatedScreen

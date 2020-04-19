@@ -17,14 +17,24 @@ class CreatedEventDetails extends React.Component {
                 user: 'Používateľ',
                 confirmation: 'Stav potvrdenia',
                 dismiss: 'Zatvoril',
-                none_yet: 'Nevyjadril sa'
+                none_yet: 'Nevyjadril sa',
+                event_yes: 'Zúčastní sa',
+                event_no: 'Zúčastní sa',
+                event_maybe: 'Možno sa zúčastní',
+                yes: 'Áno',
+                no: 'Nie'
             },
             en:{
                 name: 'Name',
                 user: 'User',
                 confirmation: 'Confirmation status',
                 dismiss: 'Dissmissed',
-                none_yet: 'No comment yet '
+                none_yet: 'No comment yet ',
+                event_yes: 'will join',
+                event_no: 'declined invitation',
+                event_maybe: 'maybe will join',
+                yes: 'Yes',
+                no: 'No'
             }
         };
 
@@ -56,13 +66,18 @@ class CreatedEventDetails extends React.Component {
                         {this.strings[this.props.lang].confirmation}:                       
                     </span>
                     <span className={["text-white", "text-right", "col-6"].join(' ')} >                      
-                        {recievers[item].response == null && this.strings[this.props.lang].none_yet}
+                        {recievers[item].response === null && this.strings[this.props.lang].none_yet}
+                        {recievers[item].response === "1" && this.strings[this.props.lang].event_yes}
+                        {recievers[item].response === "0" && this.strings[this.props.lang].event_no}
+                        {recievers[item].response === "2" && this.strings[this.props.lang].event_maybe}
                     </span>
+
                     <span className={["text-white", "text-left", "col-6"].join(' ')} >
                         {this.strings[this.props.lang].dismiss}: 
                     </span>
                     <span className={["text-white", "text-rigt", "col-6"].join(' ')} >
-                        {recievers[item].dismiss == 0 && "No"}
+                        {recievers[item].dismiss === "0" &&  this.strings[this.props.lang].no}
+                        {recievers[item].dismiss === "1" &&  this.strings[this.props.lang].yes}
                     </span>
                     <div className={["col-12", styles.style_white].join(' ')} >                        
                     </div>                     

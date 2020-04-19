@@ -1,8 +1,6 @@
 import React from 'react';
 //vlastne ccs/scss musi mat v nazve .module, inak nacitanie failne ...
 import styles from '../shared.module.scss';
-//import {UserMenu} from './UserMenu.js';
-import $ from 'jquery';
 import icon_settings from '../../images/settings.svg';
 
 class HomeScreen extends React.Component {
@@ -17,14 +15,16 @@ class HomeScreen extends React.Component {
                 settings: 'Nastavenia',
                 events: 'Eventy',
                 create_events: 'Vytvor event',
-                created_events: 'Manažment vytvorených eventov'
+                created_events: 'Manažment vytvorených eventov',
+                recieved_events: 'Prijaté eventy'
             },
             en:{
                 title: 'Home',
                 settings: 'Settings',
                 events: 'Events',
                 create_events: 'Create Events',
-                created_events: 'Manage created events'
+                created_events: 'Manage created events',
+                recieved_events: 'Recieved Events'
             }
         };
     }
@@ -53,12 +53,12 @@ class HomeScreen extends React.Component {
 
                     <div className="d-flex col-12 col-md-6 py-5 bg-red">
                     <button 
-                        onClick={(e) => this.props.changeScreen('settings', e)} 
+                        onClick={(e) => this.props.changeScreen('manage_recieved', e)} 
                         className={styles.menu_btn}
                         >
                         <div className={["d-flex","p-4","mx-auto",styles.menu_item].join(' ')}>
                         <img src={icon_settings} className={["settings", styles.user_icon, styles.settings_img].join(' ')} alt="settings" />       
-                        <h3 className="pl-3 align-self-center">{this.strings[this.props.lang].events}</h3>
+                        <h3 className="pl-3 align-self-center">{this.strings[this.props.lang].recieved_events}</h3>
                         {this.props.new_events > 0 && this.props.new_events}
                         </div>
                     </button>

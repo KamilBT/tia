@@ -35,6 +35,9 @@ class db{
             VALUES ('.$item->id.','. $id_event.', null, false);';
             $this->con->query($q) or die($this->con->error);
         }
+        $resp = new \stdClass();
+        $resp->check = 'success';
+        echo json_encode($resp,JSON_UNESCAPED_UNICODE);
 
     }
 
@@ -174,7 +177,7 @@ class db{
                 //fail password
                 $resp = new \stdClass();
                 $resp->check = 'wrong';
-                $resp->data= '{}';
+                $resp->data= new \stdClass();
                 echo json_encode($resp,JSON_UNESCAPED_UNICODE);
 
             }        
@@ -189,7 +192,6 @@ class db{
         $this->con->query($q) or die($this->con->error);
         $resp = new \stdClass();
         $resp->check = 'success';
-        $resp->data= '{}';
         echo json_encode($resp,JSON_UNESCAPED_UNICODE);
     }
 
@@ -215,6 +217,26 @@ class db{
         echo json_encode($resp,JSON_UNESCAPED_UNICODE);
     }
 
+
+    function getRecieved($name, $id){
+        $q = 'SELECT user_event.id_event, user_event.response, user_event.dismiss, 
+        event.name, event.location, event.date, event.time, user.name as "sender", user.id as "sender_id" FROM user_event 
+        JOIN event on user_event.id_event = event.id 
+        JOIN user ON event.id_sender = user.id 
+        WHERE user_event.id_user="'.$id.'"';   
+        $result = $this->con->query($q) or die($this->con->error);   
+        
+        $resp = new \stdClass();
+        $resp->check = 'success';
+
+        $resp->data = new \stdClass();
+        $resp->data->events = [];
+        while($row = $result->fetch_assoc()){
+            array_push($resp->data->events, $row);
+        }
+        echo json_encode($resp,JSON_UNESCAPED_UNICODE);
+    }
+
     /**
      *  basic generator for salt
      */
@@ -229,6 +251,25 @@ class db{
    
         return $randString;
    }
+
+   function hideEvent($id_event, $id_user, $bool){
+        $q= 'UPDATE `user_event` SET `dismiss`="'.$bool.'" WHERE id_user="'.$id_user.'" AND id_event="'.$id_event.'"';
+        $this->con->query($q) or die($this->con->error);
+        $resp = new \stdClass();
+        $resp->check = 'success';
+        $resp->data = new \stdClass();
+        echo json_encode($resp,JSON_UNESCAPED_UNICODE);
+   }
+   
+   function responseToEv($id_event, $id_user, $resp){
+        $q= 'UPDATE `user_event` SET `response`="'.$resp.'" WHERE id_user="'.$id_user.'" AND id_event="'.$id_event.'"';
+        $this->con->query($q) or die($this->con->error);
+        $resp = new \stdClass();
+        $resp->check = 'success';
+        $resp->data = new \stdClass();
+        echo json_encode($resp,JSON_UNESCAPED_UNICODE);
+    }
+   
 }
 
 ?>

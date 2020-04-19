@@ -40,6 +40,27 @@ button.log_screen{
   }
 }
 
+button.eventAction{
+  @include tn-2;
+  @include style_white;
+  padding: 5px 10px;
+  background: transparent;
+  border-radius: 20px;
+  font-weight: 700;
+  &:hover{
+    color: $dark;
+    background: white;
+  }
+  &:focus{
+    color: $dark;
+    background: white; 
+  }
+}
+.chosen{
+  color: $dark !important;
+  background: white !important;
+}
+
 .bot-0{
   bottom:0 !important;
 }
