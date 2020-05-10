@@ -67,6 +67,7 @@ class LoginForm extends React.Component {
                 setUserList: this.props.setUserList,
                 setUserListID: this.props.setUserListID,
                 setUserID: this.props.setUserID,
+                setLevel: this.props.setLevel,
                 success: function (response) {
                     let resp = JSON.parse(response);                   
                     switch(resp?.check){
@@ -80,6 +81,7 @@ class LoginForm extends React.Component {
                             //TODO LOAD USER DATA                                                     
                             this.setUserList(resp.data.userList, resp.data.userListId);
                             this.setUserID(resp.data.user_id);
+                            this.setLevel(resp.data.level);
                             //hide LoginScreen and open UserScreen
                             $("#login_screen").animate({left: '500px', opacity: '0'}, 500).fadeOut();
                             $("#user_screen").fadeIn();

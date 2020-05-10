@@ -8,7 +8,16 @@ if(isset($_POST['name']) && isset($_POST['action']) && isset($_POST['check'])){
     require('db.php'); 
     $db = new db();
     $db->connect();
-    $db->deleteUser($_POST['name']);
+    switch($_POST['action']){
+        case 'deleteUsr':
+            $db->deleteUser($_POST['name']);
+            break;
+        case 'deleteUsrId':
+            $db->deleteUserId($_POST['name']);
+            break;
+        default:
+            break;
+    }
 }
 
 ?>

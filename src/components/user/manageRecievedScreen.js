@@ -3,8 +3,7 @@ import React from 'react';
 import styles from '../shared.module.scss';
 import $ from 'jquery';
 import icon_back from '../../images/back.svg';
-import {RecievedEvent} from './recievedEvent.js'
-import { CreatedEventDetails } from './createdEventDetails.js';
+import {RecievedEvent} from './recievedEvent.js';
 
 
 class ManageRecievedScreen extends React.Component {
@@ -91,17 +90,10 @@ class ManageRecievedScreen extends React.Component {
                             openDetails = {this.openDetails}
                             user_id = {this.props.user.id}
                             updateResponse = {this.props.updateResponse}
+                            setPaid = {this.props.setPaid}
+                            setAnswer = {this.props.setAnswer}
                         />                                            
-                    </div>  
-
-                    {/*<div id="event_details" className={["container", "bg-dark",styles.style_white, styles.content_center, styles.hidden].join(' ')}>
-                        <CreatedEventDetails
-                            created_ev = {this.props.created_ev}
-                            lang = {this.props.lang}
-                            detail_id = {this.state.detail_id}                            
-                        />
-                        
-                    </div>*/ }                 
+                    </div>               
 
                 </div>
             </div>

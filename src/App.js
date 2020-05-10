@@ -1,6 +1,6 @@
 import React from 'react';
-//import logo from './logo.svg';
 import './App.css';
+import $ from 'jquery';
 
 //vytorene komponenty
 import {LoginScreen} from './components/login/login.js';
@@ -14,10 +14,13 @@ class App extends React.Component {
     this.getSupportedLang = this.getSupportedLang.bind(this);
     //updateName
     this.updateName = this.updateName.bind(this);
+    //setLevel
+    this.setLevel = this.setLevel.bind(this);
     //set user list
     this.setUserList = this.setUserList.bind(this);
     //set user id
     this.setUserID = this.setUserID.bind(this);
+    this.updateUserList = this.updateUserList.bind(this);
 
     //handle login input state
     this.onLoginScreenInput = this.onLoginScreenInput.bind(this);
@@ -26,11 +29,12 @@ class App extends React.Component {
         name: '',
         id: '',
         userList: [],
-        userListID: []
+        userListID: [],
+        Level: ''
       },
       lang: 'en',
-      baseUrl: 'http://localhost/fmfi/tia/event-planner/public'
-      //baseUrl: '.'
+      //baseUrl: 'http://localhost/fmfi/tia/event-planner/public'
+      baseUrl: '.'
     };
   }
 
@@ -40,7 +44,8 @@ class App extends React.Component {
     let lang = navigator.language.substring(0, 2);
     let supported = ['sk', 'en'];
     if(!supported.includes(lang)) lang='en';
-    this.setState({ lang: lang});
+    //this.setState({ lang: lang});
+    return lang;
   }
 
   onLoginScreenInput(e){
@@ -59,6 +64,16 @@ class App extends React.Component {
       user: {                   // object that we want to update
           ...prevState.user,    // keep all other key-value pairs
           name: name       // update the value of specific key
+      }
+    }))
+  }
+
+  //for exmaple from deleteting action
+  async setLevel(level){
+    await this.setState(prevState => ({
+      user: {                   // object that we want to update
+          ...prevState.user,    // keep all other key-value pairs
+          level: level       // update the value of specific key
       }
     }))
   }
@@ -94,11 +109,25 @@ class App extends React.Component {
     //console.log(this.state);
   }
 
+  /**
+   *  update user list (for creating eevnts, when one needs to choose who will recieve)
+   */
+  async updateUserList(list){
+    //transform list to value label object for select
+    await this.setState(prevState => ({
+      user: {                   
+          ...prevState.user,    
+          userList: list       
+      }
+    }));
+    $("#delete_check_user").fadeOut();
+  }
+
 
   render(){
     //sharing user name across components
     const user = this.state.user;
-    const lang = this.state.lang;
+    const lang = this.getSupportedLang();
     const baseUrl = this.state.baseUrl;
     return (
       <div className="App container-fluid bg-dark" style={{height:'100vh',overflowX:'hidden'}}>
@@ -110,13 +139,15 @@ class App extends React.Component {
           onLoginScreenInput={this.onLoginScreenInput} 
           setUserList = {this.setUserList}
           setUserID = {this.setUserID}
+          setLevel={this.setLevel}
         />
         <div className="row">
           <UserScreen 
             user={user}
             lang={lang}
             baseUrl={baseUrl}
-            updateName={this.updateName} 
+            updateName={this.updateName}
+            updateUserList={this.updateUserList}
                   
           />
         </div>     

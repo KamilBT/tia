@@ -22,6 +22,7 @@ class LoginScreen extends React.Component {
               onLoginScreenInput={this.props.onLoginScreenInput}
               setUserList = {this.props.setUserList}
               setUserID = {this.props.setUserID}
+              setLevel = {this.props.setLevel}
             />
 
         </div>

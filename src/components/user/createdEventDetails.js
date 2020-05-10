@@ -3,6 +3,7 @@ import React from 'react';
 import styles from '../shared.module.scss';
 import $ from 'jquery';
 import icon_back from '../../images/back.svg';
+import {CEDQuestions} from './createdEventDetailsQuestions.js';
 
 class CreatedEventDetails extends React.Component {
 
@@ -22,7 +23,8 @@ class CreatedEventDetails extends React.Component {
                 event_no: 'Zúčastní sa',
                 event_maybe: 'Možno sa zúčastní',
                 yes: 'Áno',
-                no: 'Nie'
+                no: 'Nie',
+                questions: 'Priložené otázky'
             },
             en:{
                 name: 'Name',
@@ -34,7 +36,8 @@ class CreatedEventDetails extends React.Component {
                 event_no: 'declined invitation',
                 event_maybe: 'maybe will join',
                 yes: 'Yes',
-                no: 'No'
+                no: 'No',
+                questions: 'Attached questions'
             }
         };
 
@@ -56,7 +59,7 @@ class CreatedEventDetails extends React.Component {
                 Event: {this.props.created_ev[ev_id].name}</h3>
             }
             { recievers != null && Object.keys(recievers).map((item) => {
-                console.log(item);
+                //console.log(item);
                 return (
                 <div className={["row"].join(' ')} key={"detail_of-"+item}>
                     <h4 className="text-white w-100 text-left p-3">
@@ -79,6 +82,19 @@ class CreatedEventDetails extends React.Component {
                         {recievers[item].dismiss === "0" &&  this.strings[this.props.lang].no}
                         {recievers[item].dismiss === "1" &&  this.strings[this.props.lang].yes}
                     </span>
+                    { recievers[item]?.questions.hasOwnProperty('null') === false &&
+                    <div className="container">
+                        <h5 className={["text-white", "text-center", "col-12", "my-3"].join(' ')} >
+                            {this.strings[this.props.lang].questions}
+                        </h5>
+
+                        <CEDQuestions 
+                            questions = {recievers[item].questions}
+                            lang = {this.props.lang}                        
+                        />
+                    </div>
+                    }
+
                     <div className={["col-12", styles.style_white].join(' ')} >                        
                     </div>                     
                 </div>                

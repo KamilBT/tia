@@ -92,7 +92,7 @@ class ManageCreatedScreen extends React.Component {
                 
                     </div>
         
-                    <div id="created_list" className={["container",styles.hidden].join(' ')}>                        
+                    <div id="created_list" className={["container"].join(' ')}>                        
                         <CreatedEvent 
                             created_ev = {this.props.created_ev}
                             lang = {this.props.lang}

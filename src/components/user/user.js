@@ -8,6 +8,7 @@ import {CreateEventScreen} from './createEventScreen.js';
 import {ManageRecievedScreen} from './manageRecievedScreen.js';
 import {ManageCreatedScreen} from './manageCreatedScreen.js';
 import {SettingsScreen} from './settings.js';
+import {AdminScreen} from './admin.js';
 
 
 class UserScreen extends React.Component {
@@ -20,6 +21,9 @@ class UserScreen extends React.Component {
         this.getCreatedEvents = this.getCreatedEvents.bind(this);
         this.getRecievedEvents = this.getRecievedEvents.bind(this);
         this.updateResponse = this.updateResponse.bind(this);
+        this.setPaid = this.setPaid.bind(this);
+        this.setAnswer = this.setAnswer.bind(this);
+        this.checkUser = this.checkUser.bind(this);
         //localization
         this.strings ={
             sk:{
@@ -88,6 +92,16 @@ class UserScreen extends React.Component {
         case 'detailEv_close':
           $("#event_details").fadeOut();
           break;
+        case 'manage_users':
+            //this.checkUser(this.props.user.id);
+            $("#homeMenu").fadeOut();
+            $("#user_management").fadeIn();
+            break;
+        case 'home_admin':
+          //change to home from settings
+          $("#user_management").fadeOut();
+          $("#homeMenu").fadeIn();
+          break;
         default:
           break;
       }
@@ -126,28 +140,45 @@ class UserScreen extends React.Component {
                       ev_array.forEach(el => {
                         //console.log(el);
                         if(!events.hasOwnProperty(el.id_event)){
-                          //if object has no data for event, add shared data and 1st reciever
+                          //if object has no data for event, add shared data and 1st reciever and questions
                           events[el.id_event] = {
                             sender: el.id_sender,
                             name: el.name,
                             location: el.location,
                             date: el.date,
                             time: el.time,
+                            iban: el?.iban,
+                            price: el?.price,
+                            price_pp: el?.price_pp,
                             send_to: {
                               [el.id_user]: {
                                 response: el.response,
                                 dismiss: el.dismiss,
-                                name: el.user_name
+                                name: el.user_name,
+                                questions :{
+                                  [el.fk_question]:{
+                                    text: el.text,
+                                    answer: el.answer
+                                  }
+                                }      
                               }
-                            }
+                            },
+                            //questions: el.
                           }
                         }
                         else{
-                          //set response and dissmiss for another users, that event was sent to
+                          //set response and dissmiss for another users, that event was sent to + Questions
                           events[el.id_event].send_to[el.id_user] = {
                             response: el.response,
                             dismiss: el.dismiss,
-                            name: el.user_name
+                            name: el.user_name,
+                            questions :{
+                              ...events[el.id_event].send_to[el.id_user]?.questions,                                               
+                              [el.fk_question]:{
+                                text: el.text,
+                                answer: el.answer
+                              }
+                            } 
                           }
                         }                      
                       });                      
@@ -208,7 +239,27 @@ class UserScreen extends React.Component {
                             time: el.time,                            
                             response: el.response,
                             dismiss: el.dismiss,
-                            booking: el?.booking                                                             
+                            paid: el.paid,
+                            //booking: el?.booking,
+                            iban: el?.iban,
+                            price: el?.price,
+                            price_pp: el?.price_pp,
+                            questions :{
+                              ...events[el.id_event]?.questions,                                               
+                              [el.fk_question]:{
+                                text: el.text,
+                                answer: el.answer
+                              }
+                            }
+                          }
+                        }
+                        else{
+                          events[el.id_event].questions = {
+                            ...events[el.id_event]?.questions,                                               
+                            [el.fk_question]:{
+                              text: el.text,
+                              answer: el.answer
+                            }
                           }
                         }                                    
                       });                      
@@ -227,13 +278,145 @@ class UserScreen extends React.Component {
       });    
   }
 
-  async updateResponse(ev_id, event){
+  async updateResponse(user_id, ev_id, resp, e){
+    //console.log(this.state.recieved_ev);
+    //console.log(event.response);
     await this.setState(prevState => ({
       recieved_ev: {                   
           ...prevState.recieved_ev,    
-          [ev_id]: event 
+          [ev_id]: {
+            ...prevState.recieved_ev[ev_id],
+            response: resp
+          } 
       }
     }));
+    console.log(this.state.recieved_ev);
+    $.ajax({
+      type: 'post',
+      url: this.props.baseUrl+'/backend/eventAction.php',
+      data: "id_user="+user_id+"&id_event="+ev_id+"&action=response&response="+resp+"",
+      success: function (response) {
+          let r = JSON.parse(response);                   
+          switch(r?.check){
+              case 'success':                                                                                               
+                  //console.log(r);                                 
+                  break;
+              default:
+                  break;
+          }             
+      }
+  });
+  }
+  /**
+   * Update paid info about booking event
+   */
+  async setPaid(e, user_id, ev_id, bool){
+    //console.log(ev_id, user_id, bool);
+
+    await this.setState(prevState => ({
+      recieved_ev: {                   
+          ...prevState.recieved_ev,    
+          [ev_id]: {
+            ...prevState.recieved_ev[ev_id],
+            paid: bool
+          } 
+      }
+    }));
+
+    console.log(this.state.recieved_ev)
+
+    $.ajax({
+        type: 'post',
+        url: this.props.baseUrl+'/backend/eventAction.php',
+        data: "id_user="+user_id+"&id_event="+ev_id+"&action=setPaid&paid="+bool+"",
+        success: function (response) {
+            let resp = JSON.parse(response);                   
+            switch(resp?.check){
+                case 'success':                                                                                
+                    break;
+                default:
+                    break;
+            }             
+        }
+        });
+    
+}
+
+  /**
+  * Set answer to Question in event.
+  */
+  async setAnswer(e, ev_id, user_id, q_id){
+    //console.log(ev_id, user_id, q_id);
+    console.log(e.target.value + " __ "+ this.state.recieved_ev[ev_id].questions[q_id].answer);
+    if(this.state.recieved_ev[ev_id].questions[q_id].answer === null || this.state.recieved_ev[ev_id].questions[q_id].answer === "0"){
+      await this.setState(prevState => ({
+        recieved_ev: {                   
+            ...prevState.recieved_ev,    
+            [ev_id]: {
+              ...prevState.recieved_ev[ev_id],
+              questions: {
+                ...prevState.recieved_ev[ev_id].questions,
+                [q_id]:{
+                  ...prevState.recieved_ev[ev_id].questions[q_id],
+                  answer: "1"
+                }
+              } 
+            } 
+        }
+      }));
+    }
+    else{
+      await this.setState(prevState => ({
+        recieved_ev: {                   
+            ...prevState.recieved_ev,    
+            [ev_id]: {
+              ...prevState.recieved_ev[ev_id],
+              questions: {
+                ...prevState.recieved_ev[ev_id].questions,
+                [q_id]:{
+                  ...prevState.recieved_ev[ev_id].questions[q_id],
+                  answer: "0"
+                }
+              } 
+            } 
+        }
+      }));
+    }
+    $.ajax({
+        type: 'post',
+        url: this.props.baseUrl+'/backend/eventAction.php',
+        data: "id_user="+user_id+"&id_event="+ev_id+"&q_id="+q_id+"&action=setQA&answer="+this.state.recieved_ev[ev_id].questions[q_id].answer+"",
+        success: function (response) {
+            let resp = JSON.parse(response);                   
+            switch(resp?.check){
+                case 'success':                                                                        
+                    console.log(resp?.data);                        
+                    break;
+                default:
+                    break;
+            }             
+        }
+    });   
+  }
+
+  checkUser(user_id){
+    console.log(user_id);
+    $.ajax({
+      type: 'post',
+      url: this.props.baseUrl+'/backend/eventAction.php',
+      data: "id_user="+user_id+"&action=checkUser",
+      success: function (response) {
+        console.log(response);
+          /*let resp = JSON.parse(response);                   
+          switch(resp?.check){
+              case 'success':                                                                        
+                  console.log(resp?.data);                        
+                  break;
+              default:
+                  break;
+          }*/             
+      }
+  });  
   }
     
   
@@ -277,6 +460,8 @@ class UserScreen extends React.Component {
               recieved_ev = {this.state.recieved_ev}
               user_id = {this.props.user.id}
               updateResponse = {this.updateResponse}
+              setPaid = {this.setPaid}
+              setAnswer = {this.setAnswer}
             />
 
             <ManageCreatedScreen
@@ -296,6 +481,16 @@ class UserScreen extends React.Component {
               baseUrl={baseUrl}
               changeScreen={this.changeScreen}
               updateName={this.props.updateName} 
+            />
+
+            <AdminScreen
+              user={user}
+              sreen = {screen}
+              lang = {lang}
+              baseUrl={baseUrl}
+              changeScreen={this.changeScreen}
+              updateName={this.props.updateName}
+              updateUserList={this.props.updateUserList} 
             />
 
         </div>
