@@ -1,3 +1,11 @@
+## Event Planner - project for TIA 2020
+
+To use app you need to register or login with existing account.
+Within app you can create events, and send them to another users of app. You can choose between default and booking event, and you can also attach questions. You can manage recieved events and react to invitataion.
+You have also option to change password or delete account.
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
